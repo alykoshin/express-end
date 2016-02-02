@@ -18,8 +18,11 @@ Express middleware to emit `end` event on `res.end()`
 - `finish` - when request processed 
 
 Unfortunately, if client is close its connection, there is no event signalling that the server side finished the processing of the request as `finish` event does not fires in this case.
+It may be correct from abstract framework perspective as the request to be terminated (and network connection is closed).
+However, there are several negative outcomes of this approach. One of them is that middleware has no information when the server has really finished the processing of the request. 
 
-This module overrides `res.end()` function to emit `end` when `res.end()` is called, i.e. processing by server is finished.
+This module overrides `res.end()` function to emit `end` when `res.end()` is called, i.e. when processing by server is finished independently of whether the connection was closed by client or not. 
+
 
 Usage:
  

@@ -38,6 +38,8 @@ app.use(function(req, res, next) {
 });
 
 
+var RESPONSE_DELAY = 1000; // Milliseconds
+
 app.get('/test1', function (req, res) {
   //console.log('get(test1): 1');
   var result = { test: 'test' };
@@ -47,7 +49,7 @@ app.get('/test1', function (req, res) {
       .status(200)
       .send(result);
     //console.log('get(test1): 3');
-  }, 1000);
+  }, RESPONSE_DELAY);
 
 });
 
