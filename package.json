@@ -1,6 +1,6 @@
 {
   "name": "express-end",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Express middleware to emit &#39;end&#39; event on res.end()",
   "main": "./index.js",
   "engines": {
