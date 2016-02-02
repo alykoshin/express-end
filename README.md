@@ -10,7 +10,31 @@
 
 # express-end
 
-Express middleware to emit &#39;end&#39; event on res.end()
+Express middleware to emit `end` event on `res.end()`
+
+`res` object has following events: 
+- `header` - when HTTP Header is written, 
+- `close`  - when connection is closed from client side
+- `finish` - when request processed 
+
+Unfortunately, if client is close its connection, there is no event signalling that the server side finished the processing of the request as `finish` event does not fires in this case.
+
+This module overrides `res.end()` function to emit `end` when `res.end()` is called, i.e. processing by server is finished.
+
+Usage:
+ 
+```js
+var express = require('express');
+
+//var endEvent = require('express-end');
+var endEvent = require('../');
+
+var app = express();
+
+app.use(endEvent);
+
+...
+```
 
 
 If you have different needs regarding the functionality, please add a [feature request](https://github.com/alykoshin/express-end/issues).

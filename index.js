@@ -1,6 +1,6 @@
 'use strict';
 
-var debug = require('debug')('queue');
+var debug = require('debug')('end');
 
 
 var endMw = function(req, res, next) {
