@@ -24,20 +24,75 @@ However, there are several negative outcomes of this approach. One of them is th
 This module overrides `res.end()` function to emit `end` when `res.end()` is called, i.e. when processing by server is finished independently of whether the connection was closed by client or not. 
 
 
-Usage:
+Usage example:
  
 ```js
+'use strict';
+
 var express = require('express');
-
-//var endEvent = require('express-end');
-var endEvent = require('../');
-
+var http    = require('http');
+var endMw = require('express-end');
+//var endMw = require('../');
 var app = express();
 
-app.use(endEvent);
+app.use(endMw);
 
-...
+var count = 0;
+
+app.use(function(req, res, next) {
+  var current = ++count;
+  console.log('[%d] app.use()', current);
+
+  res.once('close',  function() {
+    console.log('[%d] app.use(): res.once(close)', current);
+  });
+
+  res.once('end',    function() {
+    console.log('[%d] app.use(): res.once(end)', current);
+  });
+
+  res.once('finish', function() {
+    console.log('[%d] app.use(): res.once(finish)', current);
+  });
+
+  next();
+});
+
+
+var httpPort = 8080;
+var RESPONSE_DELAY = 1000; // Milliseconds
+
+app.get('/test1', function (req, res) {
+  var result = { test: 'test' };
+  setTimeout(function() {
+    res
+      .status(200)
+      .send(result);
+  }, RESPONSE_DELAY);
+});
+
+
+var server = http.createServer(app);
+
+server.listen(httpPort, function () {
+  console.log('* Server listening at %s:%d', server.address().address, server.address().port);
+});
 ```
+
+Log (first request completed by server, second request cancelled by client):
+
+```
+$ node app.js 
+* Server listening at :::8080
+[1] app.use()
+[1] app.use(): res.once(end)
+[1] app.use(): res.once(finish)
+[2] app.use()
+[2] app.use(): res.once(close)
+[2] app.use(): res.once(end)
+``` 
+
+The source code for this example is located in `demo/` subdirectory of package
 
 
 If you have different needs regarding the functionality, please add a [feature request](https://github.com/alykoshin/express-end/issues).

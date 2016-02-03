@@ -2,24 +2,16 @@
 
 var express = require('express');
 var http    = require('http');
-
-//var end = require('express-end');
-var endEventPatch = require('../');
-
-var httpPort = 8080;
-
-
+//var endMw = require('express-end');
+var endMw = require('../');
 var app = express();
 
-//
-app.use(endEventPatch);
+app.use(endMw);
 
 var count = 0;
 
 app.use(function(req, res, next) {
-
   var current = ++count;
-
   console.log('[%d] app.use()', current);
 
   res.once('close',  function() {
@@ -38,27 +30,21 @@ app.use(function(req, res, next) {
 });
 
 
+var httpPort = 8080;
 var RESPONSE_DELAY = 1000; // Milliseconds
 
 app.get('/test1', function (req, res) {
-  //console.log('get(test1): 1');
   var result = { test: 'test' };
   setTimeout(function() {
-    //console.log('get(test1): 2');
     res
       .status(200)
       .send(result);
-    //console.log('get(test1): 3');
   }, RESPONSE_DELAY);
-
 });
 
 
 var server = http.createServer(app);
 
 server.listen(httpPort, function () {
-  console.log('* Server listening at ' +
-    server.address().address + ':' +
-    server.address().port);
+  console.log('* Server listening at %s:%d', server.address().address, server.address().port);
 });
-
