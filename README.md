@@ -94,6 +94,9 @@ $ node app.js
 
 The source code for this example is located in `demo/` subdirectory of package
 
+You may also have a look on the discussion on the topic at stackexchange: http://codereview.stackexchange.com/questions/20069/monkey-patching-extra-events-in-node-js-http-express
+
+
 
 If you have different needs regarding the functionality, please add a [feature request](https://github.com/alykoshin/express-end/issues).
 

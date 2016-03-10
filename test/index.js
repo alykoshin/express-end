@@ -46,7 +46,22 @@ describe('express-end', function () {
 
   });
 
-  it('should call original res.end() passing correct this and arguments', function (done) {
+  it('should emit `end` on `res.end()`', function (done) {
+    var endArgs = [ 'arg1', 'arg2', 'arg3' ];
+
+    res.end = function() {};
+
+    res.on('end', function() {
+      done();
+    });
+
+    endMw(req, res, function() {
+      res.end.apply(this, endArgs);
+    });
+
+  });
+
+  it('should call original res.end() passing correct `this` and `arguments`', function (done) {
     var endArgs = [ 'arg1', 'arg2', 'arg3' ];
     var endThis = { 'end': 'this' };
 
@@ -60,21 +75,6 @@ describe('express-end', function () {
 
     endMw(req, res, function() {
       res.end.apply(endThis, endArgs);
-    });
-
-  });
-
-  it('should emit `end` on `res.end()`', function (done) {
-    var endArgs = [ 'arg1', 'arg2', 'arg3' ];
-
-    res.end = function() {};
-
-    res.on('end', function() {
-      done();
-    });
-
-    endMw(req, res, function() {
-      res.end.apply(this, endArgs);
     });
 
   });
