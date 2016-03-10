@@ -10,27 +10,72 @@ chai.should();
 //http://chaijs.com/plugins/chai-things
 chai.use(require('chai-things'));
 
+var EventEmitter = require('events');
+var util = require('util');
+
+var endMw = require('../');
+
+
 describe('express-end', function () {
+  var req, res;
 
   before('before', function () {
 
   });
 
   beforeEach('beforeEach', function () {
+    req = {};
+
+    var Res = function() {
+      EventEmitter.call(this);
+    };
+    util.inherits(Res, EventEmitter);
+    res = new Res();
+  });
+
+  it('should replace res.end() & store original res.end() to res._queue_orig_end_handler', function (done) {
+    var resEnd = function() {};
+    res.end = resEnd;
+    expect(res._queue_orig_end_handler).is.undefined;
+
+    endMw(req, res, function() {
+      expect(res._queue_orig_end_handler).equals(resEnd);
+      expect(res.end).is.not.undefined;
+      done();
+    });
 
   });
 
-  afterEach('afterEach', function () {
+  it('should call original res.end() passing correct this and arguments', function (done) {
+    var endArgs = [ 'arg1', 'arg2', 'arg3' ];
+    var endThis = { 'end': 'this' };
+
+    var resEnd = function( /* arguments */ ) {
+      var args = Array.prototype.slice.call(arguments);
+      expect(args).eql(endArgs);
+      expect(this).eql(endThis);
+      done();
+    };
+    res.end = resEnd;
+
+    endMw(req, res, function() {
+      res.end.apply(endThis, endArgs);
+    });
 
   });
 
-  after('after', function () {
+  it('should emit `end` on `res.end()`', function (done) {
+    var endArgs = [ 'arg1', 'arg2', 'arg3' ];
 
-  });
+    res.end = function() {};
 
-  it('should have unit test', function () {
+    res.on('end', function() {
+      done();
+    });
 
-    assert(false, 'Please add unit tests.');
+    endMw(req, res, function() {
+      res.end.apply(this, endArgs);
+    });
 
   });
 

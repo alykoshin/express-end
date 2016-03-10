@@ -15,10 +15,10 @@ Express middleware to emit `end` event on `res.end()`
 `res` object has following events: 
 - `header` - when HTTP Header is written, 
 - `close`  - when connection is closed from client side
-- `finish` - when request processed 
+- `finish` - when request processing finished (*) 
 
-Unfortunately, if client is close its connection, there is no event signalling that the server side finished the processing of the request as `finish` event does not fires in this case.
-It may be correct from abstract framework perspective as the request to be terminated (and network connection is closed).
+(*) Unfortunately, if client has closed its connection, there is no event signalling that the server side finished the processing of the request as `finish` event does not fires in this case.
+It may be correct from abstract framework perspective as the request to be terminated without response to the client (and network connection is closed) and looks like it's does not matter whether the server finished the processing or not.
 However, there are several negative outcomes of this approach. One of them is that middleware has no information when the server has really finished the processing of the request. 
 
 This module overrides `res.end()` function to emit `end` when `res.end()` is called, i.e. when processing by server is finished independently of whether the connection was closed by client or not. 
