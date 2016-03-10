@@ -1,7 +1,7 @@
 {
   "name": "express-end",
   "version": "0.0.4",
-  "description": "Express middleware to emit &#39;end&#39; event on res.end()",
+  "description": "Express middleware to emit 'end' event on res.end()",
   "main": "./index.js",
   "engines": {
     "node": ">=0.10"
